@@ -1,65 +1,127 @@
 import React, { Component } from 'react';
+import Table from './components/Table';
+import NameForm from './components/MyForms';
 
-const my_list = [
-    {
-        title: 'Road to react- 2019',
-        url: 'https://facebook.github.io/react',
-        author: 'Jordan Walke',
-        num_comments: 103,
-        points: 400,
-        object_id: 0
-    },
-    {
-        title: 'React devs in Kenya',
-        url: 'https://facebook.github.io/react',
-        author: 'Jordan Walke',
-        num_comments: 103,
-        points: 400,
-        object_id: 2
-    },
-    {
-        title: 'React makes me happy.',
-        url: 'https://facebook.github.io/react',
-        author: 'Jordan Walke',
-        num_comments: 103,
-        points: 400,
-        object_id: 3
-    },
-    {
-        title: 'Just another indication that this is the thing.',
-        url: 'https://facebook.github.io/react',
-        author: 'Jordan Walke',
-        num_comments: 103,
-        points: 400,
-        object_id: 4
-    }
-];
+const DEFAULT_QUERY = 'redux';
+const PATH_BASE = 'https://hn.algolia.com/api/v1';
+const PATH_SEARCH = '/search';
+const PARAM_SEARCH = 'query=';
+
+const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${DEFAULT_QUERY}`;
+
+console.log(url);
 
 class App extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            my_list,
+            result: null,
+            search_term: DEFAULT_QUERY,
         };
+
+        this.setSearchTopStories = this.setSearchTopStories.bind(this);
+        this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
+        this.onDismiss = this.onDismiss.bind(this);
+        this.onSearchChange = this.onSearchChange.bind(this);
+        this.onSearchSubmit = this.onSearchSubmit.bind(this);
+    }
+
+    fetchSearchTopStories(search_term) {
+        fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${search_term}`)
+        .then(response => response.json())
+        .then(result => this.setSearchTopStories(result, search_term))
+        .catch(error => error);
+    }
+
+    setSearchTopStories(result, search_term) {
+        this.setState({ result, search_term });
+    }
+
+    componentDidMount() {
+        const { search_term } = this.state;
+        this.fetchSearchTopStories(search_term);
+
+        fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${search_term}`)
+        .then(response => response.json())
+        .then(result =>  this.setSearchTopStories(result))
+        .catch(error => error);
+    }
+
+    onDismiss(id) {
+        const updated_list = this.state.result.filter( (item) => item.objectID !== id);
+        this.setState({ result: updated_list });
+    }
+
+    handleChange(event) {
+        this.setState({submitted_value: event.target.value });
+    }
+
+    handleSubmit(event) {
+        alert('A name was submitted! Name: ' + this.state.submitted_value );
+        event.preventDefault();
+    }
+
+    onSearchChange(event) {
+        this.setState({ search_term: event.target.value });
+    }
+
+    onSearchSubmit(event) {
+        const { search_term } = this.state;
+        this.fetchSearchTopStories(search_term);
+        event.preventDefault();
     }
 
     render() {
+
+        const { search_term, result } = this.state;
+
+        if (!result) { return null; }
+
+
         return (
             <div className='container'>
-                { this.state.my_list.map( (item) => {
-                    return (
-                        <div key={item.object_id} className='jumbotron'>
-                            <span> <a href={ item.url }> { item.title } </a></span>&nbsp;
-                            <span>Author: { item.author }</span>&nbsp;
-                            <span>Commnents: { item.num_comments }</span>&nbsp;
-                            <span>Points: { item.points }</span>
-                        </div>
-                    );
-                })}
+                <NameForm />
+                <Search 
+                    value={search_term}
+                    onChange={this.onSearchChange}
+                    onSubmit={this.onSearchSubmit}
+                >
+                    Search
+                </Search>
+                { result &&                
+                <Table 
+                    result={result.hits}
+                    onDismiss={this.onDismiss}
+                    pattern={this.state.search_term}
+                />
+                }            
             </div>
         );
     }
 }
 
+const Search = ({ 
+    value, 
+    onChange, 
+    onSubmit, 
+    children 
+}) =>
+    <form className='form' onSubmit={onSubmit}>
+        <div className="form-group">
+            <input 
+                type="text"
+                value={value}
+                onChange={onChange}
+                placeholder='Input your search query here.'
+                className='form-control'
+            />
+            <button
+                type="submit">
+                {children}
+            </button>
+        </div>
+    </form>
+
 export default App;
+
