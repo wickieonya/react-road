@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Table from './components/Table';
-import NameForm from './components/MyForms';
+import Navbar from './components/Navbar';
+import Search from './components/Search';
 
 const DEFAULT_QUERY = 'redux';
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
@@ -81,7 +82,7 @@ class App extends Component {
 
         return (
             <div className='container'>
-                <NameForm />
+                <Navbar />
                 <Search 
                     value={search_term}
                     onChange={this.onSearchChange}
@@ -101,27 +102,6 @@ class App extends Component {
     }
 }
 
-const Search = ({ 
-    value, 
-    onChange, 
-    onSubmit, 
-    children 
-}) =>
-    <form className='form' onSubmit={onSubmit}>
-        <div className="form-group">
-            <input 
-                type="text"
-                value={value}
-                onChange={onChange}
-                placeholder='Input your search query here.'
-                className='form-control'
-            />
-            <button
-                type="submit">
-                {children}
-            </button>
-        </div>
-    </form>
 
 export default App;
 
