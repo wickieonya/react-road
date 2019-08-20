@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Table from './components/Table';
+import Search from './components/Search';
 import NameForm from './components/MyForms';
 
 const DEFAULT_QUERY = 'redux';
@@ -49,7 +50,9 @@ class App extends Component {
     }
 
     onDismiss(id) {
-        const updated_list = this.state.result.filter( (item) => item.objectID !== id);
+        console.log('id', id);
+        console.log('state.result', this.state.result);
+        const updated_list = this.state.result.hits.filter( (item) => item.objectID !== id);
         this.setState({ result: updated_list });
     }
 
@@ -81,7 +84,7 @@ class App extends Component {
 
         return (
             <div className='container'>
-                <NameForm />
+                <br></br>
                 <Search 
                     value={search_term}
                     onChange={this.onSearchChange}
@@ -101,27 +104,6 @@ class App extends Component {
     }
 }
 
-const Search = ({ 
-    value, 
-    onChange, 
-    onSubmit, 
-    children 
-}) =>
-    <form className='form' onSubmit={onSubmit}>
-        <div className="form-group">
-            <input 
-                type="text"
-                value={value}
-                onChange={onChange}
-                placeholder='Input your search query here.'
-                className='form-control'
-            />
-            <button
-                type="submit">
-                {children}
-            </button>
-        </div>
-    </form>
 
 export default App;
 
