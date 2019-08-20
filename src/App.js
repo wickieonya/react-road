@@ -7,7 +7,7 @@ const my_list = [
         author: 'Jordan Walke',
         num_comments: 103,
         points: 400,
-        object_id: 0
+        objectID: 0
     },
     {
         title: 'React devs in Kenya',
@@ -15,7 +15,7 @@ const my_list = [
         author: 'Jordan Walke',
         num_comments: 103,
         points: 400,
-        object_id: 2
+        objectID: 2
     },
     {
         title: 'React makes me happy.',
@@ -23,7 +23,7 @@ const my_list = [
         author: 'Jordan Walke',
         num_comments: 103,
         points: 400,
-        object_id: 3
+        objectID: 3
     },
     {
         title: 'Just another indication that this is the thing.',
@@ -31,7 +31,7 @@ const my_list = [
         author: 'Jordan Walke',
         num_comments: 103,
         points: 400,
-        object_id: 4
+        objectID: 4
     }
 ];
 
@@ -42,6 +42,13 @@ class App extends Component {
         this.state = {
             my_list,
         };
+
+        this.onDismiss = this.onDismiss.bind(this);
+    }
+
+    onDismiss(id) {
+        const updated_list = this.state.my_list.filter(item => item.objectID !== id);
+        this.setState({ my_list: updated_list });
     }
 
     render() {
@@ -49,11 +56,20 @@ class App extends Component {
             <div className='container'>
                 { this.state.my_list.map( (item) => {
                     return (
-                        <div key={item.object_id} className='jumbotron'>
+                        <div key={item.objectID} className='jumbotron'>
                             <span> <a href={ item.url }> { item.title } </a></span>&nbsp;
                             <span>Author: { item.author }</span>&nbsp;
                             <span>Commnents: { item.num_comments }</span>&nbsp;
                             <span>Points: { item.points }</span>
+                            <span>
+                                <button
+                                    onClick={() => this.onDismiss(item.objectID) }
+                                    type="button"
+                                    className="btn btn-outline-danger"
+                                >
+                                    Dismiss 
+                                </button>
+                            </span>
                         </div>
                     );
                 })}
